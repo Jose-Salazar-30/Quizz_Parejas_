@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nuestro Viaje - Juego para Parejas</title>
+    
+    <!-- Tailwind CSS para el diseño -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Poppins para un toque amigable y moderno -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+        }
+
+        /* Utilidades para el efecto 3D de la tarjeta */
+        .perspective-1000 {
+            perspective: 1000px;
+        }
+        
+        .transform-style-3d {
+            transform-style: preserve-3d;
+        }
+        
+        .backface-hidden {
+            backface-visibility: hidden;
+            -webkit-backface-visibility: hidden; /* Soporte Safari */
+        }
+        
+        .rotate-y-180 {
+            transform: rotateY(180deg);
+        }
+
+        /* Sombra suave y romántica para la tarjeta */
+        .card-shadow {
+            box-shadow: 0 20px 40px -15px rgba(225, 29, 72, 0.15);
+        }
+
+        /* Estilo para ocultar la scrollbar pero mantener funcionalidad en filtros */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+</head>
+<body class="min-h-screen bg-gradient-to-br from-rose-50 via-pink-50 to-orange-50 flex flex-col items-center py-10 px-4 text-gray-800">
+
+    <!-- Encabezado -->
+    <header class="text-center mb-8 max-w-md w-full">
+        <div class="flex justify-center mb-3">
+            <svg class="w-10 h-10 text-rose-500 animate-pulse" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                <path fill-rule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clip-rule="evenodd"></path>
+            </svg>
+        </div>
+        <h1 class="text-3xl font-bold text-rose-900 mb-2">Nuestro Viaje</h1>
+        <p class="text-rose-600/80 text-sm">Descubriéndonos un poco más, pregunta a pregunta.</p>
+    </header>
+
+    <!-- Filtros de Categorías -->
+    <div class="w-full max-w-md mb-8 overflow-x-auto no-scrollbar">
+        <div class="flex gap-2 justify-start sm:justify-center pb-2 px-1">
+            <button onclick="setFilter('Todas')" id="btn-Todas" class="filter-btn active bg-rose-500 text-white px-4 py-2 rounded-full text-xs font-semibold whitespace-nowrap shadow-md transition-all duration-300">Todas</button>
+            <button onclick="setFilter('Niñez')" id="btn-Niñez" class="filter-btn bg-white text-gray-600 hover:bg-rose-100 px-4 py-2 rounded-full text-xs font-medium whitespace-nowrap transition-all duration-300">Niñez</button>
+            <button onclick="setFilter('Adolescencia')" id="btn-Adolescencia" class="filter-btn bg-white text-gray-600 hover:bg-rose-100 px-4 py-2 rounded-full text-xs font-medium whitespace-nowrap transition-all duration-300">Adolescencia</button>
+            <button onclick="setFilter('Actualidad')" id="btn-Actualidad" class="filter-btn bg-white text-gray-600 hover:bg-rose-100 px-4 py-2 rounded-full text-xs font-medium whitespace-nowrap transition-all duration-300">Actualidad</button>
+            <button onclick="setFilter('Futuro')" id="btn-Futuro" class="filter-btn bg-white text-gray-600 hover:bg-rose-100 px-4 py-2 rounded-full text-xs font-medium whitespace-nowrap transition-all duration-300">Futuro</button>
+        </div>
+    </div>
+
+    <!-- Contenedor Principal de la Tarjeta (Efecto 3D) -->
+    <div class="w-full max-w-md perspective-1000 mb-8 cursor-pointer" onclick="nextQuestion()">
+        <!-- Div interno que rota -->
+        <div id="card-inner" class="relative w-full h-[320px] transition-transform duration-700 transform-style-3d ease-in-out">
+            
+            <!-- CARA FRONTAL -->
+            <div id="card-front" class="absolute inset-0 w-full h-full bg-white rounded-3xl p-8 flex flex-col justify-center items-center text-center backface-hidden card-shadow border border-rose-100">
+                <span id="front-category" class="absolute top-6 px-3 py-1 rounded-full text-xs font-bold tracking-wider uppercase bg-rose-100 text-rose-600">
+                    Etapa
+                </span>
+                <p id="front-text" class="text-xl md:text-2xl font-semibold text-gray-800 leading-snug mt-6">
+                    Haz clic en el botón de abajo para sacar la primera tarjeta.
+                </p>
+                <div class="absolute bottom-6 flex space-x-1 opacity-40">
+                    <div class="w-1.5 h-1.5 rounded-full bg-rose-400"></div>
+                    <div class="w-1.5 h-1.5 rounded-full bg-rose-400"></div>
+                    <div class="w-1.5 h-1.5 rounded-full bg-rose-400"></div>
+                </div>
+            </div>
+
+            <!-- CARA TRASERA -->
+            <div id="card-back" class="absolute inset-0 w-full h-full bg-white rounded-3xl p-8 flex flex-col justify-center items-center text-center backface-hidden rotate-y-180 card-shadow border border-rose-100">
+                <span id="back-category" class="absolute top-6 px-3 py-1 rounded-full text-xs font-bold tracking-wider uppercase bg-rose-100 text-rose-600">
+                    Etapa
+                </span>
+                <p id="back-text" class="text-xl md:text-2xl font-semibold text-gray-800 leading-snug mt-6">
+                    Siguiente pregunta...
+                </p>
+                <div class="absolute bottom-6 flex space-x-1 opacity-40">
+                    <div class="w-1.5 h-1.5 rounded-full bg-rose-400"></div>
+                    <div class="w-1.5 h-1.5 rounded-full bg-rose-400"></div>
+                    <div class="w-1.5 h-1.5 rounded-full bg-rose-400"></div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Botones de Acción -->
+    <div class="w-full max-w-md flex flex-col items-center gap-4">
+        <button onclick="nextQuestion()" class="w-full bg-gradient-to-r from-rose-400 to-rose-600 hover:from-rose-500 hover:to-rose-700 text-white font-bold py-4 px-8 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 flex items-center justify-center gap-2">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+            </svg>
+            Sacar Nueva Tarjeta
+        </button>
+        <p class="text-xs text-gray-400">También puedes tocar la tarjeta para voltearla</p>
+    </div>
+
+    <!-- LÓGICA DE JAVASCRIPT -->
+    <script>
+        // --------------------------------------------------------------------
+        // BASE DE DATOS DE PREGUNTAS (40 preguntas, 10 por categoría)
+        // --------------------------------------------------------------------
+        const allQuestions = [
+            // NIÑEZ
+            { category: "Niñez", text: "¿Cuál es tu recuerdo más feliz de la infancia?" },
+            { category: "Niñez", text: "¿Qué querías ser de mayor cuando tenías 7 años?" },
+            { category: "Niñez", text: "¿Cuál era tu juguete o posesión más preciada?" },
+            { category: "Niñez", text: "¿Qué travesura recuerdas haber hecho y de la que te arrepientes (o no)?" },
+            { category: "Niñez", text: "¿A qué le tenías más miedo cuando eras niño/a?" },
+            { category: "Niñez", text: "¿Cuál era tu programa de televisión o caricatura favorita?" },
+            { category: "Niñez", text: "¿Cómo era tu relación con tus hermanos o primos de pequeño/a?" },
+            { category: "Niñez", text: "¿Qué comida odiabas de niño/a y ahora te encanta?" },
+            { category: "Niñez", text: "¿Quién era tu mejor amigo/a en la escuela primaria y qué hacían?" },
+            { category: "Niñez", text: "¿Cuál es la mejor lección que te enseñaron tus padres en esa época?" },
+
+            // ADOLESCENCIA
+            { category: "Adolescencia", text: "¿Cuál fue tu momento más vergonzoso en la secundaria/preparatoria?" },
+            { category: "Adolescencia", text: "¿De qué moda o estilo de tu adolescencia te arrepientes más?" },
+            { category: "Adolescencia", text: "¿Quién fue tu primer amor platónico famoso o ficticio?" },
+            { category: "Adolescencia", text: "¿Cuál fue la mayor rebeldía que cometiste contra tus padres?" },
+            { category: "Adolescencia", text: "¿Qué música o banda escuchabas todo el tiempo encerrado/a en tu cuarto?" },
+            { category: "Adolescencia", text: "¿Cómo recuerdas tu primer beso? (Si quieres compartirlo)" },
+            { category: "Adolescencia", text: "¿Cuál era tu mayor inseguridad en la adolescencia?" },
+            { category: "Adolescencia", text: "¿Qué consejo le darías a tu 'yo' de 15 años hoy en día?" },
+            { category: "Adolescencia", text: "¿Cuál fue tu primer trabajo o forma de conseguir dinero propio?" },
+            { category: "Adolescencia", text: "¿Qué gran sueño tenías a los 16 años que ha cambiado por completo hoy?" },
+
+            // ACTUALIDAD
+            { category: "Actualidad", text: "¿Qué es lo que más te gusta de nuestra relación en este momento?" },
+            { category: "Actualidad", text: "¿Cuál es tu mayor fuente de estrés actualmente y cómo puedo ayudarte?" },
+            { category: "Actualidad", text: "Si tuvieras que describir tu vida actual en 3 palabras, ¿cuáles serían?" },
+            { category: "Actualidad", text: "¿Qué detalle pequeño hago en el día a día que te hace sonreír?" },
+            { category: "Actualidad", text: "¿Hay algo nuevo que te gustaría que intentáramos juntos este mes?" },
+            { category: "Actualidad", text: "¿Qué es lo que más admiras de ti mismo/a hoy en día?" },
+            { category: "Actualidad", text: "¿Cuál dirías que es nuestro mejor recuerdo juntos hasta ahora?" },
+            { category: "Actualidad", text: "Si pudiéramos teletransportarnos ahora mismo a una cita perfecta, ¿dónde estaríamos?" },
+            { category: "Actualidad", text: "¿Qué hábito tuyo te gustaría mejorar actualmente?" },
+            { category: "Actualidad", text: "¿Qué te hace sentir más amado/a o valorado/a por mí?" },
+
+            // FUTURO
+            { category: "Futuro", text: "¿Dónde nos ves viviendo dentro de 5 o 10 años?" },
+            { category: "Futuro", text: "¿Cuál es tu viaje soñado que debemos hacer sí o sí juntos algún día?" },
+            { category: "Futuro", text: "¿Cómo te imaginas nuestra rutina de domingo cuando estemos jubilados?" },
+            { category: "Futuro", text: "¿Qué meta personal te gustaría alcanzar en los próximos 3 años?" },
+            { category: "Futuro", text: "Si tuviéramos una casa diseñada a nuestro gusto, ¿qué habitación sería tu favorita y por qué?" },
+            { category: "Futuro", text: "¿Qué tradición te gustaría que creáramos o mantuviéramos para nuestra futura familia?" },
+            { category: "Futuro", text: "¿Cómo crees que cambiaremos (física y mentalmente) al envejecer juntos?" },
+            { category: "Futuro", text: "¿Qué es algo de tu 'lista de deseos' antes de morir que quieres tachar pronto?" },
+            { category: "Futuro", text: "¿Cuál es tu mayor miedo respecto al futuro y cómo crees que podemos afrontarlo?" },
+            { category: "Futuro", text: "¿Qué legado o impacto te gustaría dejar en el mundo o en nuestra familia?" }
+        ];
+
+        // --------------------------------------------------------------------
+        // VARIABLES DE ESTADO
+        // --------------------------------------------------------------------
+        let currentFilter = 'Todas';
+        let unaskedQuestions = [...allQuestions];
+        let isFlipped = false; // Controla qué cara de la tarjeta se está mostrando
+
+        // Colores por categoría (para el badge de la tarjeta)
+        const categoryStyles = {
+            "Niñez": "bg-yellow-100 text-yellow-700",
+            "Adolescencia": "bg-blue-100 text-blue-700",
+            "Actualidad": "bg-green-100 text-green-700",
+            "Futuro": "bg-purple-100 text-purple-700"
+        };
+
+        // --------------------------------------------------------------------
+        // FUNCIONES
+        // --------------------------------------------------------------------
+
+        // Cambiar el filtro seleccionado
+        function setFilter(category) {
+            currentFilter = category;
+            
+            // Actualizar estilos de los botones
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.classList.remove('bg-rose-500', 'text-white', 'shadow-md');
+                btn.classList.add('bg-white', 'text-gray-600');
+            });
+            
+            const activeBtn = document.getElementById(`btn-${category}`);
+            activeBtn.classList.remove('bg-white', 'text-gray-600');
+            activeBtn.classList.add('bg-rose-500', 'text-white', 'shadow-md');
+
+            // Reiniciar la lista de preguntas disponibles para el nuevo filtro
+            if (category === 'Todas') {
+                unaskedQuestions = [...allQuestions];
+            } else {
+                unaskedQuestions = allQuestions.filter(q => q.category === category);
+            }
+            
+            // Sacar una nueva tarjeta inmediatamente al cambiar de filtro
+            nextQuestion();
+        }
+
+        // Obtener una pregunta aleatoria
+        function getRandomQuestion() {
+            // Si ya no quedan preguntas de esta categoría, volvemos a llenar la lista
+            if (unaskedQuestions.length === 0) {
+                if (currentFilter === 'Todas') {
+                    unaskedQuestions = [...allQuestions];
+                } else {
+                    unaskedQuestions = allQuestions.filter(q => q.category === currentFilter);
+                }
+            }
+
+            // Seleccionar aleatoria
+            const randomIndex = Math.floor(Math.random() * unaskedQuestions.length);
+            const selectedQuestion = unaskedQuestions[randomIndex];
+            
+            // Remover la seleccionada para no repetirla pronto
+            unaskedQuestions.splice(randomIndex, 1);
+            
+            return selectedQuestion;
+        }
+
+        // Voltear la tarjeta y mostrar la siguiente pregunta
+        function nextQuestion() {
+            const question = getRandomQuestion();
+            const cardInner = document.getElementById('card-inner');
+            const frontText = document.getElementById('front-text');
+            const frontCategory = document.getElementById('front-category');
+            const backText = document.getElementById('back-text');
+            const backCategory = document.getElementById('back-category');
+
+            // Preparar el badge de categoría
+            const styleClass = categoryStyles[question.category];
+
+            if (!isFlipped) {
+                // Estamos viendo el frente. Actualizamos la parte de atrás y volteamos.
+                backText.textContent = question.text;
+                backCategory.textContent = question.category;
+                backCategory.className = `absolute top-6 px-3 py-1 rounded-full text-xs font-bold tracking-wider uppercase ${styleClass}`;
+                
+                cardInner.classList.add('rotate-y-180');
+                isFlipped = true;
+            } else {
+                // Estamos viendo atrás. Actualizamos el frente y volteamos de regreso.
+                frontText.textContent = question.text;
+                frontCategory.textContent = question.category;
+                frontCategory.className = `absolute top-6 px-3 py-1 rounded-full text-xs font-bold tracking-wider uppercase ${styleClass}`;
+                
+                cardInner.classList.remove('rotate-y-180');
+                isFlipped = false;
+            }
+        }
+
+        // Cargar la primera pregunta al iniciar la página
+        window.onload = () => {
+            // Cargamos silenciosamente la primera pregunta en el frente
+            const firstQuestion = getRandomQuestion();
+            const frontText = document.getElementById('front-text');
+            const frontCategory = document.getElementById('front-category');
+            
+            frontText.textContent = firstQuestion.text;
+            frontCategory.textContent = firstQuestion.category;
+            frontCategory.className = `absolute top-6 px-3 py-1 rounded-full text-xs font-bold tracking-wider uppercase ${categoryStyles[firstQuestion.category]}`;
+        };
+
+    </script>
+</body>
+</html>
